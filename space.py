@@ -1,5 +1,6 @@
 # SPACE INVADER !!!
 
+from PIL import ImageTk, Image
 import tkinter as tk
 
 class player:
@@ -9,11 +10,13 @@ class player:
         self.x = 0
         self.y = 0
         self.life = 3
-        self.img = tk.PhotoImage(file="img/main_char.png")
+        #self.img = tk.PhotoImage(file="img/main_char.png")
+        self.img = ImageTk.PhotoImage(Image.open("img/main_char.png"))
+        self.imgv2 = self.img._PhotoImage__photo.zoom(2)
         print("player initialized")
 
 
-class Example:
+class Space:
     def __init__(self):
         self.root = tk.Tk()
         self.canvas_width = 600
@@ -28,10 +31,15 @@ class Example:
         # create player 
         i = 1
         p = player(i)
+        self.listP = [p]
     
     def start(self):
+        for p in self.listP:
+            p.imgCanvas = self.canvas.create_image(self.canvas_width // 2, self.canvas_height -10, image=p.imgv2)
+            p.x = self.canvas_width // 2
+            p.y = self.canvas_height -10
         self.root.mainloop()
         
-ex = Example()
+ex = Space()
 ex.install()
 ex.start()
