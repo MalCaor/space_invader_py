@@ -9,6 +9,7 @@ class player:
         self.x = 0
         self.y = 0
         self.life = 3
+        self.img = tk.PhotoImage(file="img/main_char.png")
         print("player initialized")
 
 
