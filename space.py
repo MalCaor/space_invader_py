@@ -5,15 +5,36 @@ import tkinter as tk
 
 class player:
     # Player Class
-    def __init__(self, id):
+    def __init__(self, id, canvas, x, y):
         self.id = id
-        self.x = 0
-        self.y = 0
+        self.x = x
+        self.y = y
+        self.mX = 0
+        self.mY = 0
         self.life = 3
-        #self.img = tk.PhotoImage(file="img/main_char.png")
         self.img = ImageTk.PhotoImage(Image.open("img/main_char.png"))
         self.imgv2 = self.img._PhotoImage__photo.zoom(2)
+        self.canvas = canvas
+        self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
         print("player initialized")
+
+    def right(self, event):
+        print(event.keysym)
+        self.mX = 5
+        self.mY = 0
+
+    def left(self, event):
+        print(event.keysym)
+        self.mX = -5
+        self.mY = 0
+
+    def movement(self):
+        print("move to x:" + str(self.x) + " y:" + str(self.y))
+        self.canvas.move(self.sprite, self.mX, self.mY)
+        self.canvas.after(100, self.movement)
+        # reset to 0 the movement
+        self.mX = 0
+        self.mY = 0
 
 
 class Space:
@@ -30,14 +51,13 @@ class Space:
         sw = self.square_width
         # create player 
         i = 1
-        p = player(i)
+        p = player(i,self.canvas, self.canvas_width // 2, self.canvas_height-10)
         self.listP = [p]
     
     def start(self):
-        for p in self.listP:
-            p.imgCanvas = self.canvas.create_image(self.canvas_width // 2, self.canvas_height -10, image=p.imgv2)
-            p.x = self.canvas_width // 2
-            p.y = self.canvas_height -10
+        self.listP[0].movement()
+        self.root.bind("<KeyPress-Left>", lambda e: self.listP[0].left(e))
+        self.root.bind("<KeyPress-Right>", lambda e: self.listP[0].right(e))
         self.root.mainloop()
         
 ex = Space()
