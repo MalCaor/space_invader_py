@@ -59,6 +59,8 @@ class Space:
     def install(self):
         w, h  = self.canvas_width // 2, self.canvas_height // 2
         sw = self.square_width
+        # create background
+        self.canvas.create_rectangle(0,0, self.canvas_width, self.canvas_height, fill='black')
         # create player 
         i = 1
         p = player(i,self.canvas, self.canvas_width // 2, self.canvas_height-10)
