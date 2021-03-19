@@ -23,6 +23,7 @@ class player:
         self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
         # console message when init finish
         print("player initialized")
+        #j'ai mis un commentaire pour modifier le fichier
 
     def right(self, event):
         # function to move right
