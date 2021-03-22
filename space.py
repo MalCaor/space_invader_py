@@ -3,7 +3,7 @@
 from PIL import ImageTk, Image
 import tkinter as tk
 
-class player:
+class Defender:
     # Player Class
     def __init__(self, id, canvas, x, y):
         # player id
@@ -22,6 +22,8 @@ class player:
         self.canvas = canvas
         self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
         # console message when init finish
+        self.max_fired_bullet = 8
+        self.fired_bullet = []
         print("player initialized")
         
 
@@ -39,7 +41,7 @@ class player:
 
     def movement(self):
         # fuction called to move
-        print("move to x:" + str(self.x) + " y:" + str(self.y))
+        #print("move to x:" + str(self.x) + " y:" + str(self.y))
         self.canvas.move(self.sprite, self.mX, self.mY)
         self.canvas.after(100, self.movement)
         # reset to 0 the movement
@@ -49,59 +51,91 @@ class player:
 
 
 
-class alien:
+class Alien:
     def __init__(self, x, y, canvas):
         self.x = x
         self.y = y
         self.canvas = canvas
-        self.img = ImageTk.PhotoImage(Image.open("img/alien.png"))
-        self.imgv2 = self.img._PhotoImage__photo.zoom(2)
-        self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
+        self.gap = 20
+        self.alien_id = None
+        
+        #self.img = ImageTk.PhotoImage(Image.open("img/alien.png"))
+        #self.imgv2 = self.img._PhotoImage__photo.zoom(2)
+        #self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
+        
 
-    def right(self, event):
-        # function to move right
-        print(event.keysym)
-        self.mX = 10
-        self.mY = 0
+    def install_in(self):
+        w = 20
+        self.alien_id = self.canvas.create_rectangle(self.x-w/2, self.y-w/2, self.x+w/2, self.y+w/2, fill="red")
 
-    def left(self, event):
-        # function to move left
-        print(event.keysym)
-        self.mX = -10
-        self.mY = 0
+    def setGap(self, gap):
+        self.gap = gap
 
-    def movement(self):
-        # fuction called to move
-        print("move to x:" + str(self.x) + " y:" + str(self.y))
-        self.canvas.move(self.sprite, self.x, self.y)
-        self.canvas.after(100, self.movement)
-        # reset to 0 the movement
-        self.mX = 0
-        self.mY = 0
+    def moveOrComeBack(self):
+        # alien movement
+        self.canvas.move(self.alien_id, self.gap, 0)
+
+    def goDown(self):
+        self.canvas.move(self.alien_id, 0, 30)
 
 
 
-class alienFleet:
+class Fleet:
     def __init__(self, canvas):
         self.fleet = []
         self.est = 0
         self.west = 0
         self.orientation = 0
         self.canvas = canvas
+
+        self.est = 0
+        self.west = 0
+        self.orientation = 0
     
     def install_in(self):
         canvas_width = int(self.canvas.cget("width"))
         canvas_height = int(self.canvas.cget("height"))
-        x, y = 5, 5
-        for i in range(3):  #change value to change fleet size
+        x, y = canvas_width//10, canvas_height//10        # need to change values, pas ouf pas ouf
+        
+        self.west = x
+
+        for i in range(3):  #change value to change fleet size (nb line)
             line = []
-            for j in range(5):  #change value to change fleet size
+            for j in range(5):  #change value to change fleet size (nb alien in line)
                 x = x + 40
-                y = y+40
-                line.append(alien(x,y,self.canvas))
+                line.append(Alien(x,y,self.canvas))
+                line[j].install_in()
+                self.est = x+20
             self.fleet.append(line)
+            x = x - (j+1)*40
+            y = y + 40
             
-            
+    def moveOrComeBack(self, largeur):
+        #largeur = int(self.canvas.cget("width"))
+        if(self.west-40 < 0):
+            print("west")
+            self.orientation = 0
+            for line in self.fleet:
+                for a in line:
+                    a.goDown()
+                    a.setGap(20)
+        if(self.est+40 > largeur):
+            print("est")
+            self.orientation = 1
+            for line in self.fleet:
+                for a in line:
+                    a.goDown()
+                    a.setGap(-20)
+        for line in self.fleet:
+            for a in line:
+                a.moveOrComeBack()
+                if(self.orientation == 0):
+                    self.est = self.est+20
+                    self.west = self.west+20
+                else:
+                    self.est = self.est-20
+                    self.west = self.west-20
+        
 
 
 
@@ -118,7 +152,8 @@ class Space:
         self.square_width = 50
         self.canvas = tk.Canvas(self.root, width=self.canvas_width, height = self.canvas_height)
         self.canvas.pack()
-        
+        self.fleet = None
+
 
     def install(self):
         #w, h  = self.canvas_width // 2, self.canvas_height // 2
@@ -127,10 +162,20 @@ class Space:
         self.canvas.create_rectangle(0,0, self.canvas_width, self.canvas_height, fill='black')
         # create player 
         i = 1
-        p = player(i,self.canvas, self.canvas_width // 2, self.canvas_height-10)
+        p = Defender(i,self.canvas, self.canvas_width // 2, self.canvas_height-10)
         self.listP = [p]
-        f = alienFleet(self.canvas)
-        f.install_in()
+        # create fleet
+        self.fleet = Fleet(self.canvas)
+        self.fleet.install_in()
+    
+    def start_animation(self):
+        # execute self.animation dans 10ms
+        self.canvas.after(10, self.animation)
+
+    def animation(self):
+        self.fleet.moveOrComeBack(int(self.canvas.cget("width"))*8)     # need to change the "8"
+        # execute a nouveau self.animation dans 300ms
+        self.canvas.after(300, self.animation)
     
     def start(self):
         self.install()
@@ -139,8 +184,8 @@ class Space:
         # key binding
         self.root.bind("<KeyPress-Left>", lambda e: self.listP[0].left(e))
         self.root.bind("<KeyPress-Right>", lambda e: self.listP[0].right(e))
-        
         # etc...
+        self.start_animation()
         self.root.mainloop()
 
 
