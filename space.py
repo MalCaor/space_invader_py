@@ -82,7 +82,10 @@ class Alien:
         self.y = y
         self.canvas = canvas
         self.gap = 20
-        self.alien_id = None
+        #self.alien_id = None
+        self.img = ImageTk.PhotoImage(Image.open("img/enemy_char.png"))
+        self.imgv2 = self.img._PhotoImage__photo.zoom(2)
+        self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
         # alien sprite
         #self.img = ImageTk.PhotoImage(Image.open("img/alien.png"))
         #self.imgv2 = self.img._PhotoImage__photo.zoom(2)
@@ -91,17 +94,17 @@ class Alien:
 
     def install_in(self):
         w = 20
-        self.alien_id = self.canvas.create_rectangle(self.x-w/2, self.y-w/2, self.x+w/2, self.y+w/2, fill="red")
+        # self.alien_id = self.canvas.create_rectangle(self.x-w/2, self.y-w/2, self.x+w/2, self.y+w/2, fill="red")
 
     def setGap(self, gap):
         self.gap = gap
 
     def moveOrComeBack(self):
         # alien movement
-        self.canvas.move(self.alien_id, self.gap, 0)
+        self.canvas.move(self.sprite, self.gap, 0)
 
     def goDown(self):
-        self.canvas.move(self.alien_id, 0, 30)
+        self.canvas.move(self.sprite, 0, 30)
 
 
 
