@@ -21,11 +21,18 @@ class Defender:
         self.imgv2 = self.img._PhotoImage__photo.zoom(2)
         self.canvas = canvas
         self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
-        # console message when init finish
+        # player bullets
         self.max_fired_bullet = 8
         self.fired_bullet = []
+        # console message when init finish
         print("player initialized")
         
+    def shoot(self, event):
+        # function to fire/shoot
+        print(event.keysym)
+        self.fired_bullet.append(Bullet(self))
+        current_bullet = len(self.fired_bullet)-1
+        self.fired_bullet[current_bullet].install_in()
 
     def right(self, event):
         # function to move right
@@ -50,6 +57,24 @@ class Defender:
 
 
 
+class Bullet:
+    def __init__(self,shooter):
+        self.radius = 5
+        self.color = "red"
+        self.speed = 8
+        self.bullet_id = None
+        self.shooter = shooter
+
+    def install_in(self):
+        self.bullet_id = self.shooter.canvas.create_oval(self.shooter.mX,self.shooter.mY+10,self.shooter.mX+self.radius,self.shooter.mY+10)
+
+    
+    def move_in(self,canvas):
+        return 0 #temp
+    
+
+
+
 
 class Alien:
     def __init__(self, x, y, canvas):
@@ -58,7 +83,7 @@ class Alien:
         self.canvas = canvas
         self.gap = 20
         self.alien_id = None
-        
+        # alien sprite
         #self.img = ImageTk.PhotoImage(Image.open("img/alien.png"))
         #self.imgv2 = self.img._PhotoImage__photo.zoom(2)
         #self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
@@ -113,14 +138,14 @@ class Fleet:
     def moveOrComeBack(self, largeur):
         #largeur = int(self.canvas.cget("width"))
         if(self.west-40 < 0):
-            print("west")
+            #print("west")
             self.orientation = 0
             for line in self.fleet:
                 for a in line:
                     a.goDown()
                     a.setGap(20)
         if(self.est+40 > largeur):
-            print("est")
+            #print("est")
             self.orientation = 1
             for line in self.fleet:
                 for a in line:
@@ -156,8 +181,6 @@ class Space:
 
 
     def install(self):
-        #w, h  = self.canvas_width // 2, self.canvas_height // 2
-        #sw = self.square_width
         # create background
         self.canvas.create_rectangle(0,0, self.canvas_width, self.canvas_height, fill='black')
         # create player 
@@ -184,6 +207,7 @@ class Space:
         # key binding
         self.root.bind("<KeyPress-Left>", lambda e: self.listP[0].left(e))
         self.root.bind("<KeyPress-Right>", lambda e: self.listP[0].right(e))
+        self.root.bind("<KeyPress-space>", lambda e: self.listP[0].shoot(e))
         # etc...
         self.start_animation()
         self.root.mainloop()
