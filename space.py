@@ -87,17 +87,20 @@ class alienFleet:
         self.est = 0
         self.west = 0
         self.orientation = 0
+        self.canvas = canvas
     
-    def install_in(self, canvas):
-        canvas_width = int(canvas.cget("width"))
-        canvas_height = int(canvas.cget("height"))
+    def install_in(self):
+        canvas_width = int(self.canvas.cget("width"))
+        canvas_height = int(self.canvas.cget("height"))
         x, y = 5, 5
-        for i in range(3):
+        for i in range(3):  #change value to change fleet size
             line = []
-            for j in range(5):
+            for j in range(5):  #change value to change fleet size
                 x = x + 40
                 y = y+40
-                line[j] = alien(x,y,canvas)
+                line.append(alien(x,y,self.canvas))
+            self.fleet.append(line)
+            
             
 
 
@@ -126,6 +129,8 @@ class Space:
         i = 1
         p = player(i,self.canvas, self.canvas_width // 2, self.canvas_height-10)
         self.listP = [p]
+        f = alienFleet(self.canvas)
+        f.install_in()
     
     def start(self):
         self.install()
@@ -134,6 +139,7 @@ class Space:
         # key binding
         self.root.bind("<KeyPress-Left>", lambda e: self.listP[0].left(e))
         self.root.bind("<KeyPress-Right>", lambda e: self.listP[0].right(e))
+        
         # etc...
         self.root.mainloop()
 
