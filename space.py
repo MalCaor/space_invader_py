@@ -89,11 +89,11 @@ class Alien:
         self.img = ImageTk.PhotoImage(Image.open("img/enemy_char.png"))
         self.imgv2 = self.img._PhotoImage__photo.zoom(2)
         self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
+        self.direction = 0
         # alien sprite
         #self.img = ImageTk.PhotoImage(Image.open("img/alien.png"))
         #self.imgv2 = self.img._PhotoImage__photo.zoom(2)
         #self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
-        
 
     def install_in(self):
         w = 20
@@ -104,10 +104,34 @@ class Alien:
 
     def moveOrComeBack(self):
         # alien movement
-        self.canvas.move(self.sprite, self.gap, 0)
+        if(self.direction == 0):            
+            self.canvas.move(self.sprite, self.gap, 0)
+            self.x = self.x+self.gap
+            print(str(self.x))
+        if(self.direction == 1):
+            self.canvas.move(self.sprite, -(self.gap), 0)
+            self.x = self.x-self.gap
+            print(str(self.x))
 
     def goDown(self):
-        self.canvas.move(self.sprite, 0, 30)
+        self.canvas.move(self.sprite, 0, 15)
+        self.y = self.y+15
+
+    def update(self, largeur):
+        if (self.direction == 0):
+            if (self.x + self.gap > largeur):
+                self.direction = 1
+                self.goDown()
+                self.moveOrComeBack()
+            else:
+                self.moveOrComeBack()
+        elif (self.direction == 1):
+            if (self.x - self.gap < 0):
+                self.direction = 0
+                self.goDown()
+                self.moveOrComeBack()
+            else:
+                self.moveOrComeBack()
 
 
 
@@ -118,15 +142,8 @@ class Fleet:
         self.west = 0
         self.orientation = 0
         self.canvas = canvas
-
-        self.est = 0
-        self.west = 0
-        self.orientation = 0
     
-    def install_in(self):
-        canvas_width = int(self.canvas.cget("width"))
-        canvas_height = int(self.canvas.cget("height"))
-        x, y = canvas_width//10, canvas_height//10        # need to change values, pas ouf pas ouf
+    def install_in(self, x, y):       # need to change values, pas ouf pas ouf
         
         self.west = x
 
@@ -143,29 +160,10 @@ class Fleet:
             
     def moveOrComeBack(self, largeur):
         #largeur = int(self.canvas.cget("width"))
-        if(self.west-40 < 0):
-            #print("west")
-            self.orientation = 0
-            for line in self.fleet:
-                for a in line:
-                    a.goDown()
-                    a.setGap(20)
-        if(self.est+40 > largeur):
-            #print("est")
-            self.orientation = 1
-            for line in self.fleet:
-                for a in line:
-                    a.goDown()
-                    a.setGap(-20)
         for line in self.fleet:
             for a in line:
-                a.moveOrComeBack()
-                if(self.orientation == 0):
-                    self.est = self.est+20
-                    self.west = self.west+20
-                else:
-                    self.est = self.est-20
-                    self.west = self.west-20
+                a.update(largeur)
+                print(str(largeur))
 
 class Score:
     def __init__(self, nom, score):
@@ -265,14 +263,17 @@ class Space:
         self.listP = [p]
         # create fleet
         self.fleet = Fleet(self.canvas)
-        self.fleet.install_in()
+        canvas_width = int(self.canvas.cget("width"))
+        canvas_height = int(self.canvas.cget("height"))
+        x, y = canvas_width//10, canvas_height//10 
+        self.fleet.install_in(x, y)
     
     def start_animation(self):
         # execute self.animation dans 10ms
         self.canvas.after(10, self.animation)
 
     def animation(self):
-        self.fleet.moveOrComeBack(int(self.canvas.cget("width"))*8)     # need to change the "8"
+        self.fleet.moveOrComeBack(int(self.canvas.cget("width")))     # need to change the "8"
         # execute a nouveau self.animation dans 300ms
         self.canvas.after(300, self.animation)
     
