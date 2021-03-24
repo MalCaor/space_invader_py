@@ -239,20 +239,21 @@ class Space:
     def __init__(self):
         # init canvas
         self.root = tk.Tk()
+        # pseudo 
+        self.pseudo = simpledialog.askstring(title="Pseudo",prompt="What's your Pseudo?:")
+        self.score = listScore.fromFile("score.json")
+        s = Score(self.pseudo, 0)
+        self.score.listScore.append(s)
+        # TODO : temp fix to test writing score
+        self.score.toFile("score.json")
+        # config canvas
         self.canvas_width = 600
         self.canvas_height = 400
         self.square_width = 50
         self.canvas = tk.Canvas(self.root, width=self.canvas_width, height = self.canvas_height)
         self.canvas.pack()
         self.fleet = None
-        self.pseudo = simpledialog.askstring(title="Pseudo",prompt="What's your Pseudo?:")
-        self.score = listScore.fromFile("score.json")
-        print(self.score)
-        s = Score(self.pseudo, 0)
-        self.score.listScore.append(s)
-        # TODO : temp fix to test writing score
-        print(self.score)
-        self.score.toFile("score.json")
+        
 
 
     def install(self):
