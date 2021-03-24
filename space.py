@@ -2,6 +2,8 @@
 
 from PIL import ImageTk, Image
 import tkinter as tk
+from tkinter import simpledialog
+import json
 
 class Defender:
     # Player Class
@@ -163,11 +165,59 @@ class Fleet:
                 else:
                     self.est = self.est-20
                     self.west = self.west-20
-        
 
+class Score:
+    def __init__(self, nom, score):
+        self.nom = nom
+        self.score = score
 
+    # acces fichier
+    def toFile(self, nomF):
+        f = open(nomF,"w")
+        l=self
+        json.dump(l.__dict__,f)
+        f.close()
 
+    @classmethod
+    def fromFile(cls, fich):
+        f = open(fich,"r")
+        d = json.load(f)
+        lnew=Score(d["nom"],d["score"])
+        f.close()
+        return lnew
 
+class listScore:
+    def __init__(self):
+        self.listScore = []
+
+     # acces fichier
+    def toFile(self, nomF):
+        f = open(nomF,"w")
+        tmp = []
+        for s in self.listScore:
+        #créer un dictionnaire
+            d = {}
+            d["nom"] = s.nom
+            d["score"] = s.score
+            tmp.append(d)
+        json.dump(tmp,f)
+        f.close()
+
+    @classmethod
+    def fromFile(cls,fich):
+        f = open(fich,"r")
+        #chargement
+        tmp = json.load(f)
+        liste = []
+        for d in tmp:
+            #créer un scre
+            l=Score(d["nom"],d["score"])
+            #l'ajouter dans la liste
+            liste.append(l)
+        lib=listScore()
+        lib.listdeScore=liste
+        f.close()
+        return lib
 
 
 
@@ -181,6 +231,12 @@ class Space:
         self.canvas = tk.Canvas(self.root, width=self.canvas_width, height = self.canvas_height)
         self.canvas.pack()
         self.fleet = None
+        self.pseudo = simpledialog.askstring(title="Pseudo",prompt="What's your Pseudo?:")
+        self.score = listScore.fromFile("score.json")
+        s = Score(self.pseudo, 0)
+        self.score.listScore.append(s)
+        # TODO : temp fix to test writing score
+        self.score.toFile("score.json")
 
 
     def install(self):
