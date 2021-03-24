@@ -87,7 +87,7 @@ class Alien:
         # canvas
         self.canvas = canvas
         # gap est le mouvement de l'alien
-        self.gap = 20
+        self.gap = 3
         # sprite de l'alien (imgv2 est une image plus grande de l'alien)
         self.img = ImageTk.PhotoImage(Image.open("img/enemy_char.png"))
         self.imgv2 = self.img._PhotoImage__photo.zoom(2)
@@ -280,7 +280,7 @@ class Space:
     def animation(self):
         self.fleet.moveOrComeBack(int(self.canvas.cget("width")))     # need to change the "8"
         # execute a nouveau self.animation dans 300ms
-        self.canvas.after(300, self.animation)
+        self.canvas.after(25, self.animation)
     
     def start(self):
         self.install()
