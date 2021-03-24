@@ -4,6 +4,7 @@ from PIL import ImageTk, Image
 import tkinter as tk
 from tkinter import simpledialog
 import json
+import os
 
 class Defender:
     # Player Class
@@ -208,6 +209,9 @@ class listScore:
 
     @classmethod
     def fromFile(cls,fich):
+        if not os.path.exists(fich):
+            f = open(fich,"w")
+            f.write("[]")
         f = open(fich,"r")
         #chargement
         tmp = json.load(f)
