@@ -81,89 +81,94 @@ class Bullet:
 
 class Alien:
     def __init__(self, x, y, canvas):
+        # position de l'alien
         self.x = x
         self.y = y
+        # canvas
         self.canvas = canvas
+        # gap est le mouvement de l'alien
         self.gap = 20
-        #self.alien_id = None
+        # sprite de l'alien (imgv2 est une image plus grande de l'alien)
         self.img = ImageTk.PhotoImage(Image.open("img/enemy_char.png"))
         self.imgv2 = self.img._PhotoImage__photo.zoom(2)
         self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
+        # direction est vers ou ce deplace l'alien, 0 il va a droite, 1 a gauche
         self.direction = 0
-        # alien sprite
-        #self.img = ImageTk.PhotoImage(Image.open("img/alien.png"))
-        #self.imgv2 = self.img._PhotoImage__photo.zoom(2)
-        #self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
 
     def install_in(self):
         w = 20
         # self.alien_id = self.canvas.create_rectangle(self.x-w/2, self.y-w/2, self.x+w/2, self.y+w/2, fill="red")
 
     def setGap(self, gap):
+        # set le gap (si on a besoin d'augmenter/reduire la vitesse)
         self.gap = gap
 
     def moveOrComeBack(self):
         # alien movement
-        if(self.direction == 0):            
+        if(self.direction == 0): 
+            # vers la droite           
             self.canvas.move(self.sprite, self.gap, 0)
             self.x = self.x+self.gap
-            print(str(self.x))
         if(self.direction == 1):
+            # vers la gauche
             self.canvas.move(self.sprite, -(self.gap), 0)
             self.x = self.x-self.gap
-            print(str(self.x))
 
     def goDown(self):
+        # va en bas
         self.canvas.move(self.sprite, 0, 15)
         self.y = self.y+15
 
     def update(self, largeur):
+        # fonction update a chaque tic
         if (self.direction == 0):
+            # si il va a droite
             if (self.x + self.gap > largeur):
+                # si il touche le mur
                 self.direction = 1
                 self.goDown()
                 self.moveOrComeBack()
             else:
+                # deplacement normal
                 self.moveOrComeBack()
         elif (self.direction == 1):
+            # si il va a gauche
             if (self.x - self.gap < 0):
+                # si il touche le mur
                 self.direction = 0
                 self.goDown()
                 self.moveOrComeBack()
             else:
+                # deplacement normal
                 self.moveOrComeBack()
 
 
 
 class Fleet:
+    # groupe d alien
     def __init__(self, canvas):
         self.fleet = []
-        self.est = 0
-        self.west = 0
         self.orientation = 0
         self.canvas = canvas
     
-    def install_in(self, x, y):       # need to change values, pas ouf pas ouf
-        
-        self.west = x
-
+    def install_in(self, x, y):
         for i in range(3):  #change value to change fleet size (nb line)
             line = []
             for j in range(5):  #change value to change fleet size (nb alien in line)
                 x = x + 40
                 line.append(Alien(x,y,self.canvas))
                 line[j].install_in()
-                self.est = x+20
             self.fleet.append(line)
             x = x - (j+1)*40
             y = y + 40
             
     def moveOrComeBack(self, largeur):
-        #largeur = int(self.canvas.cget("width"))
+        # largeur est la limite de l'ecran
         for line in self.fleet:
+            # pour chaque ligne
             for a in line:
+                # update chaque alien
                 a.update(largeur)
-                print(str(largeur))
 
 class Score:
     def __init__(self, nom, score):
