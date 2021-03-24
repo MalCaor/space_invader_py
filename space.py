@@ -186,6 +186,9 @@ class Score:
         f.close()
         return lnew
 
+    def __str__(self):
+        return str(self.nom) + " : " + str(self.score)
+
 class listScore:
     def __init__(self):
         self.listScore = []
@@ -215,9 +218,16 @@ class listScore:
             #l'ajouter dans la liste
             liste.append(l)
         lib=listScore()
-        lib.listdeScore=liste
+        lib.listScore=liste
         f.close()
         return lib
+
+    def __str__(self):
+        retour = "list Score : \n"
+        for s in self.listScore:
+            retour = retour+str(s)+"\n"
+        retour = retour.rstrip(retour[-1])
+        return retour
 
 
 
@@ -233,9 +243,11 @@ class Space:
         self.fleet = None
         self.pseudo = simpledialog.askstring(title="Pseudo",prompt="What's your Pseudo?:")
         self.score = listScore.fromFile("score.json")
+        print(self.score)
         s = Score(self.pseudo, 0)
         self.score.listScore.append(s)
         # TODO : temp fix to test writing score
+        print(self.score)
         self.score.toFile("score.json")
 
 
