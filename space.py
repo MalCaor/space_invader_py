@@ -30,13 +30,6 @@ class Defender:
         # console message when init finish
         print("player initialized")
         
-    def shoot(self, event):
-        # function to fire/shoot
-        print(event.keysym)
-        self.fired_bullet.append(Bullet(self))
-        current_bullet = len(self.fired_bullet)-1
-        self.fired_bullet[current_bullet].install_in()
-
     def right(self, event):
         # function to move right
         print(event.keysym)
@@ -48,6 +41,18 @@ class Defender:
         print(event.keysym)
         self.mX = -10
         self.mY = 0
+
+    def shoot(self, event):
+        # function to fire/shoot
+        print(event.keysym)
+        if(len(self.fired_bullet) < self.max_fired_bullet):
+            bullet = Bullet(self,self.canvas)
+            self.fired_bullet.append(bullet)
+            current_bullet = len(self.fired_bullet)-1
+            #self.fired_bullet[current_bullet+1].install_in()
+            #bullet.install_in()
+            print(str(current_bullet))
+            print(str(len(self.fired_bullet)))
 
     def movement(self):
         # fuction called to move
@@ -61,15 +66,23 @@ class Defender:
 
 
 class Bullet:
-    def __init__(self,shooter):
+    def __init__(self,shooter,canvas):
         self.radius = 5
         self.color = "red"
         self.speed = 8
-        self.bullet_id = None
+        
         self.shooter = shooter
+        self.canvas = canvas
+        
+        self.bullet_id = self.shooter.canvas.create_oval(self.shooter.mX,self.shooter.mY+50,self.shooter.mX+self.radius,self.shooter.mY+50) 
+
 
     def install_in(self):
-        self.bullet_id = self.shooter.canvas.create_oval(self.shooter.mX,self.shooter.mY+10,self.shooter.mX+self.radius,self.shooter.mY+10)
+        #self.bullet_id = self.shooter.canvas.create_oval(self.shooter.mX,self.shooter.mY+50,self.shooter.mX+self.radius,self.shooter.mY+50) 
+        
+        #self.bullet_id = self.canvas.create_rectangle(x-w/2, y-w/2, x+w/2, y+w/2, fill="red")
+        return 0
+
 
     
     def move_in(self,canvas):
@@ -95,10 +108,7 @@ class Alien:
         # direction est vers ou ce deplace l'alien, 0 il va a droite, 1 a gauche
         self.direction = 0
 
-    def install_in(self):
-        w = 20
-        # self.alien_id = self.canvas.create_rectangle(self.x-w/2, self.y-w/2, self.x+w/2, self.y+w/2, fill="red")
-
+    
     def setGap(self, gap):
         # set le gap (si on a besoin d'augmenter/reduire la vitesse)
         self.gap = gap
@@ -157,7 +167,6 @@ class Fleet:
             for j in range(5):  #change value to change fleet size (nb alien in line)
                 x = x + 40
                 line.append(Alien(x,y,self.canvas))
-                line[j].install_in()
             self.fleet.append(line)
             x = x - (j+1)*40
             y = y + 40
@@ -171,84 +180,84 @@ class Fleet:
                 a.update(largeur)
 
 class Score:
-    def __init__(self, nom, score):
-        self.nom = nom
+    def __init__(self, player, score):
+        self.player = player
         self.score = score
 
     # acces fichier
-    def toFile(self, nomF):
-        f = open(nomF,"w")
+    def toFile(self, fileName):
+        f = open(fileName,"w")
         l=self
         json.dump(l.__dict__,f)
         f.close()
 
     @classmethod
-    def fromFile(cls, fich):
-        f = open(fich,"r")
+    def fromFile(cls, fileName):
+        f = open(fileName,"r")
         d = json.load(f)
-        lnew=Score(d["nom"],d["score"])
+        newScore=Score(d["player"],d["score"])
         f.close()
-        return lnew
+        return newScore
 
     def __str__(self):
-        return str(self.nom) + " : " + str(self.score)
+        return str(self.player) + " : " + str(self.score)
 
-class listScore:
+class ListScore:
     def __init__(self):
         self.listScore = []
 
      # acces fichier
-    def toFile(self, nomF):
-        f = open(nomF,"w")
+    def toFile(self, fileName):
+        f = open(fileName,"w")
         tmp = []
         for s in self.listScore:
         #créer un dictionnaire
             d = {}
-            d["nom"] = s.nom
+            d["player"] = s.player
             d["score"] = s.score
             tmp.append(d)
         json.dump(tmp,f)
         f.close()
 
     @classmethod
-    def fromFile(cls,fich):
-        if not os.path.exists(fich):
-            f = open(fich,"w")
+    def fromFile(cls,fileName):
+        if not os.path.exists(fileName):
+            f = open(fileName,"w")
             f.write("[]")
-        f = open(fich,"r")
+        f = open(fileName,"r")
         #chargement
         tmp = json.load(f)
         liste = []
         for d in tmp:
             #créer un scre
-            l=Score(d["nom"],d["score"])
+            l=Score(d["player"],d["score"])
             #l'ajouter dans la liste
             liste.append(l)
-        lib=listScore()
-        lib.listScore=liste
+        vretour=ListScore()
+        vretour.listScore=liste
         f.close()
-        return lib
+        return vretour
 
     def __str__(self):
-        retour = "list Score : \n"
+        vretour = "list Score : \n"
         for s in self.listScore:
-            retour = retour+str(s)+"\n"
-        retour = retour.rstrip(retour[-1])
-        return retour
+            vretour = vretour+str(s)+"\n"
+        vretour = vretour.rstrip(vretour[-1])
+        return vretour
 
 
 
-class Space:
+class SpaceInvader:
     def __init__(self):
         # init canvas
         self.root = tk.Tk()
         # pseudo 
-        self.pseudo = simpledialog.askstring(title="Pseudo",prompt="What's your Pseudo?:")
-        self.score = listScore.fromFile("score.json")
-        s = Score(self.pseudo, 0)
-        self.score.listScore.append(s)
+        self.pseudo = simpledialog.askstring(title="Pseudo",prompt="What is your Pseudo?:")
+        self.lesScores = ListScore.fromFile("score.json")
+        leScore = Score(self.pseudo, 0)
+        self.lesScores.listScore.append(leScore)
         # TODO : temp fix to test writing score
-        self.score.toFile("score.json")
+        self.lesScores.toFile("score.json")
         # config canvas
         self.canvas_width = 600
         self.canvas_height = 400
@@ -263,8 +272,7 @@ class Space:
         # create background
         self.canvas.create_rectangle(0,0, self.canvas_width, self.canvas_height, fill='black')
         # create player 
-        i = 1
-        p = Defender(i,self.canvas, self.canvas_width // 2, self.canvas_height-10)
+        p = Defender(1,self.canvas, self.canvas_width // 2, self.canvas_height-10)
         self.listP = [p]
         # create fleet
         self.fleet = Fleet(self.canvas)
@@ -297,5 +305,5 @@ class Space:
 
 
 
-ex = Space()
+ex = SpaceInvader()
 ex.start()
