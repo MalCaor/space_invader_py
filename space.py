@@ -71,19 +71,24 @@ class Bullet:
         self.radius = 6
         self.color = "red"
         self.speed = 8
+        self.y =0
         
         self.shooter = shooter
         self.canvas = shooter.canvas
 
     def install_in(self):
         self.bullet_id = self.canvas.create_rectangle(self.shooter.x-self.radius, self.shooter.y-50-self.radius, self.shooter.x+self.radius, self.shooter.y-50+self.radius, fill=self.color) 
-        return 0
+        self.y = self.shooter.y-50-self.radius
 
     def update(self):
         self.move_in()
+        if(self.y < 0):
+            self.shooter.fired_bullet.remove(self)
+            self.canvas.delete(self.bullet_id)
     
     def move_in(self):
         self.canvas.move(self.bullet_id, 0, -(self.speed))
+        self.y = self.y-self.speed
     
 
 
