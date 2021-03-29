@@ -66,6 +66,11 @@ class Defender:
         self.mX = 0
         self.mY = 0
 
+    def update(self):
+        # function update
+        for b in self.fired_bullet:
+            b.update()
+
 
 
 class Bullet:
@@ -87,10 +92,11 @@ class Bullet:
         self.bullet_id = self.canvas.create_rectangle(self.shooter.x-self.radius, self.shooter.y-50-self.radius, self.shooter.x+self.radius, self.shooter.y-50+self.radius, fill=self.color) 
         return 0
 
-
+    def update(self):
+        self.move_in()
     
-    def move_in(self,canvas):
-        return 0 #temp
+    def move_in(self):
+        self.canvas.move(self.bullet_id, 0, -(self.speed))
     
 
 
@@ -291,6 +297,8 @@ class SpaceInvader:
 
     def animation(self):
         self.fleet.moveOrComeBack(int(self.canvas.cget("width")))     # need to change the "8"
+        for p in self.listP:
+            p.update()
         # execute a nouveau self.animation dans 300ms
         self.canvas.after(25, self.animation)
     
