@@ -47,6 +47,7 @@ class Defender:
         print(event.keysym)
         if(len(self.fired_bullet) < self.max_fired_bullet):
             bullet = Bullet(self,self.canvas)
+            bullet.install_in()
             self.fired_bullet.append(bullet)
             current_bullet = len(self.fired_bullet)-1
             #self.fired_bullet[current_bullet+1].install_in()
@@ -59,6 +60,8 @@ class Defender:
         #print("move to x:" + str(self.x) + " y:" + str(self.y))
         self.canvas.move(self.sprite, self.mX, self.mY)
         self.canvas.after(100, self.movement)
+        self.x = self.x + self.mX
+        self.y = self.y + self.mY
         # reset to 0 the movement
         self.mX = 0
         self.mY = 0
@@ -67,20 +70,21 @@ class Defender:
 
 class Bullet:
     def __init__(self,shooter,canvas):
-        self.radius = 5
+        self.radius = 6
         self.color = "red"
         self.speed = 8
         
         self.shooter = shooter
         self.canvas = canvas
         
-        self.bullet_id = self.shooter.canvas.create_oval(self.shooter.mX,self.shooter.mY+50,self.shooter.mX+self.radius,self.shooter.mY+50) 
+        
 
 
     def install_in(self):
         #self.bullet_id = self.shooter.canvas.create_oval(self.shooter.mX,self.shooter.mY+50,self.shooter.mX+self.radius,self.shooter.mY+50) 
         
         #self.bullet_id = self.canvas.create_rectangle(x-w/2, y-w/2, x+w/2, y+w/2, fill="red")
+        self.bullet_id = self.canvas.create_rectangle(self.shooter.x-self.radius, self.shooter.y-50-self.radius, self.shooter.x+self.radius, self.shooter.y-50+self.radius, fill=self.color) 
         return 0
 
 
