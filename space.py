@@ -59,10 +59,10 @@ class Defender:
         self.mX = 0
         self.mY = 0
 
-    def update(self):
+    def update(self, fleet):
         # function update
         for b in self.fired_bullet:
-            b.update()
+            b.update(fleet)
 
 
 
@@ -72,6 +72,7 @@ class Bullet:
         self.color = "red"
         self.speed = 8
         self.y =0
+        self.x=0
         
         self.shooter = shooter
         self.canvas = shooter.canvas
@@ -79,16 +80,26 @@ class Bullet:
     def install_in(self):
         self.bullet_id = self.canvas.create_rectangle(self.shooter.x-self.radius, self.shooter.y-50-self.radius, self.shooter.x+self.radius, self.shooter.y-50+self.radius, fill=self.color) 
         self.y = self.shooter.y-50-self.radius
+        self.x = self.shooter.x
 
-    def update(self):
+    def update(self, fleet):
         self.move_in()
         if(self.y < 0):
-            self.shooter.fired_bullet.remove(self)
-            self.canvas.delete(self.bullet_id)
+            self.delete()
+        listA = self.canvas.find_overlapping(self.shooter.x-self.radius, self.shooter.y-self.radius, self.shooter.x+self.radius, self.shooter.y+self.radius)
+        for l in fleet.fleet:
+            for a in l:
+                if(a.sprite in listA):
+                    print("test")
+                    self.delete()
     
     def move_in(self):
         self.canvas.move(self.bullet_id, 0, -(self.speed))
         self.y = self.y-self.speed
+
+    def delete(self):
+        self.shooter.fired_bullet.remove(self)
+        self.canvas.delete(self.bullet_id)
     
 
 
@@ -290,7 +301,7 @@ class SpaceInvader:
     def animation(self):
         self.fleet.moveOrComeBack(int(self.canvas.cget("width")))     # need to change the "8"
         for p in self.listP:
-            p.update()
+            p.update(self.fleet)
         # execute a nouveau self.animation dans 300ms
         self.canvas.after(25, self.animation)
     
