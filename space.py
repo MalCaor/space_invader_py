@@ -93,8 +93,8 @@ class Bullet:
         for l in fleet.fleet:
             for a in l:
                 if(a.sprite in listA):
-                    print("test")
                     self.delete()
+                    a.delete(l)
                     return 0
     
     def move_in(self):
@@ -171,6 +171,10 @@ class Alien:
             else:
                 # deplacement normal
                 self.moveOrComeBack()
+
+    def delete(self, line):
+        self.canvas.delete(self.sprite)
+        line.remove(self)
 
 
 
