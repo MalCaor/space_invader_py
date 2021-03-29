@@ -32,13 +32,11 @@ class Defender:
         
     def right(self, event):
         # function to move right
-        print(event.keysym)
         self.mX = 10
         self.mY = 0
 
     def left(self, event):
         # function to move left
-        print(event.keysym)
         self.mX = -10
         self.mY = 0
 
@@ -89,7 +87,6 @@ class Bullet:
             return 0
         x1, y1, x2, y2 = self.canvas.bbox(self.bullet_id)
         listA = self.canvas.find_overlapping(x1, y1, x2, y2)
-        print(listA)
         for l in fleet.fleet:
             for a in l:
                 if(a.sprite in listA):
@@ -100,8 +97,6 @@ class Bullet:
     def move_in(self):
         self.canvas.move(self.bullet_id, 0, -(self.speed))
         self.y = self.y-self.speed
-        print(str(self.x))
-        print(str(self.y))
 
     def delete(self):
         self.shooter.fired_bullet.remove(self)
@@ -124,7 +119,6 @@ class Alien:
         self.img = ImageTk.PhotoImage(Image.open("img/enemy_char.png"))
         self.imgv2 = self.img._PhotoImage__photo.zoom(2)
         self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
-        print(self.sprite)
         # direction est vers ou ce deplace l'alien, 0 il va a droite, 1 a gauche
         self.direction = 0
 
