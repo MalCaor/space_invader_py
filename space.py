@@ -32,12 +32,12 @@ class Defender:
         
     def right(self, event):
         # function to move right
-        self.mX = 10
+        self.mX = 20
         self.mY = 0
 
     def left(self, event):
         # function to move left
-        self.mX = -10
+        self.mX = -20
         self.mY = 0
 
     def shoot(self, event):
