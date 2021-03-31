@@ -196,7 +196,7 @@ class BulletAlien:
     def __init__(self,shooter):
         self.radius = 6
         self.color = "red"
-        self.speed = 8
+        self.speed = 5
         self.y =0
         self.x=0
         # shooter
