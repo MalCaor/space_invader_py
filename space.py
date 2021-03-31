@@ -67,7 +67,7 @@ class Defender:
 class Bullet:
     def __init__(self,shooter):
         self.radius = 6
-        self.color = "red"
+        self.color = "blue"
         self.speed = 8
         self.y =0
         self.x=0
