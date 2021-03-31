@@ -121,6 +121,9 @@ class Alien:
         self.sprite = self.canvas.create_image(x, y, image=self.imgv2)
         # direction est vers ou ce deplace l'alien, 0 il va a droite, 1 a gauche
         self.direction = 0
+        # shoot
+        self.max_fired_bullet = 1
+        self.fired_bullet = 0
 
     
     def setGap(self, gap):
@@ -143,7 +146,7 @@ class Alien:
         self.canvas.move(self.sprite, 0, 15)
         self.y = self.y+15
 
-    def update(self, largeur):
+    def update(self, fleet, largeur, hauteur):
         # fonction update a chaque tic
         if (self.direction == 0):
             # si il va a droite
@@ -165,12 +168,54 @@ class Alien:
             else:
                 # deplacement normal
                 self.moveOrComeBack()
+        # update bullet
+        self.shoot(fleet)
+        
+
+    def shoot(self, fleet):
+        # function to fire/shoot
+        if(self.fired_bullet < self.max_fired_bullet):
+            bullet = BulletAlien(self)
+            bullet.install_in()
+            self.fired_bullet = self.fired_bullet+1
+            fleet.fired_bullet.append(bullet)
 
     def delete(self, line):
         self.canvas.delete(self.sprite)
         line.remove(self)
 
+class BulletAlien:
+    def __init__(self,shooter):
+        self.radius = 6
+        self.color = "red"
+        self.speed = 8
+        self.y =0
+        self.x=0
+        # shooter
+        self.shooter = shooter
+        self.canvas = shooter.canvas
 
+    def install_in(self):
+        self.bullet_id = self.canvas.create_rectangle(self.shooter.x-self.radius, self.shooter.y+50-self.radius, self.shooter.x+self.radius, self.shooter.y+50+self.radius, fill=self.color) 
+        self.y = self.shooter.y-50-self.radius
+        self.x = self.shooter.x
+
+    def update(self, fleet, hauteur):
+        self.move_in()
+        if(self.y > hauteur):
+            self.delete(fleet)
+            return 0
+        x1, y1, x2, y2 = self.canvas.bbox(self.bullet_id)
+        listOverlap = self.canvas.find_overlapping(x1, y1, x2, y2)
+    
+    def move_in(self):
+        self.canvas.move(self.bullet_id, 0, +(self.speed))
+        self.y = self.y+self.speed
+
+    def delete(self, fleet):
+        fleet.fired_bullet.remove(self)
+        self.shooter.fired_bullet = self.shooter.fired_bullet-1
+        self.canvas.delete(self.bullet_id)
 
 class Fleet:
     # groupe d alien
@@ -178,6 +223,8 @@ class Fleet:
         self.fleet = []
         self.orientation = 0
         self.canvas = canvas
+        # bullet
+        self.fired_bullet = []
     
     def install_in(self, x, y):
         for i in range(3):  #change value to change fleet size (nb line)
@@ -189,13 +236,16 @@ class Fleet:
             x = x - (j+1)*40
             y = y + 40
             
-    def moveOrComeBack(self, largeur):
+    def moveOrComeBack(self, largeur, hauteur):
         # largeur est la limite de l'ecran
         for line in self.fleet:
             # pour chaque ligne
             for a in line:
                 # update chaque alien
-                a.update(largeur)
+                a.update(self, largeur, hauteur)
+        # move bullet
+        for b in self.fired_bullet:
+            b.update(self, hauteur)
 
 class Score:
     def __init__(self, player, score):
@@ -304,7 +354,7 @@ class SpaceInvader:
         self.canvas.after(10, self.animation)
 
     def animation(self):
-        self.fleet.moveOrComeBack(int(self.canvas.cget("width")))     # need to change the "8"
+        self.fleet.moveOrComeBack(int(self.canvas.cget("width")), int(self.canvas.cget("height")))     # need to change the "8"
         for p in self.listP:
             p.update(self.fleet)
         # execute a nouveau self.animation dans 300ms
