@@ -249,7 +249,7 @@ class Fleet:
             x = x - (j+1)*40
             y = y + 40
             
-    def moveOrComeBack(self, largeur, hauteur, listP):
+    def moveOrComeBack(self, spaceInv, largeur, hauteur, listP):
         i = 0
         # largeur est la limite de l'ecran
         for line in self.fleet:
@@ -260,9 +260,16 @@ class Fleet:
                 i = i + 1
         # move bullet
         if(i <= 0):
-            print("Gagner!!!")
+            self.delete(spaceInv)
+
         for b in self.fired_bullet:
             b.update(self, hauteur, listP)
+
+    def delete(self, parent):
+        parent.allFleet.remove(self)
+        for b in self.fired_bullet:
+            b.delete(self)
+                
 
 class Score:
     def __init__(self, player, score):
@@ -373,7 +380,7 @@ class SpaceInvader:
 
     def animation(self):
         for f in self.allFleet:
-            f.moveOrComeBack(int(self.canvas.cget("width")), int(self.canvas.cget("height")), self.listP)     # need to change the "8"
+            f.moveOrComeBack(self, int(self.canvas.cget("width")), int(self.canvas.cget("height")), self.listP)     # need to change the "8"
         for p in self.listP:
             p.update(self.allFleet)
         # execute a nouveau self.animation dans 300ms
