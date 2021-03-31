@@ -63,7 +63,12 @@ class Defender:
             b.update(fleet)
 
     def takeHit(self):
-        print("HIT TAKEN")
+        self.life = self.life - 1
+        if(self.life <= 0):
+            self.death()
+
+    def death(self):
+        print("perdu")
 
 
 
