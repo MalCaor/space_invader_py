@@ -62,6 +62,9 @@ class Defender:
         for b in self.fired_bullet:
             b.update(fleet)
 
+    def takeHit(self):
+        print("HIT TAKEN")
+
 
 
 class Bullet:
@@ -200,13 +203,17 @@ class BulletAlien:
         self.y = self.shooter.y+50-self.radius
         self.x = self.shooter.x
 
-    def update(self, fleet, hauteur):
+    def update(self, fleet, hauteur, listP):
         self.move_in()
         if(self.y > hauteur+25):
             self.delete(fleet)
             return 0
         x1, y1, x2, y2 = self.canvas.bbox(self.bullet_id)
         listOverlap = self.canvas.find_overlapping(x1, y1, x2, y2)
+        for p in listP:
+            if(p.sprite in listOverlap):
+                self.delete(fleet)
+                p.takeHit()
     
     def move_in(self):
         self.canvas.move(self.bullet_id, 0, +(self.speed))
@@ -236,7 +243,7 @@ class Fleet:
             x = x - (j+1)*40
             y = y + 40
             
-    def moveOrComeBack(self, largeur, hauteur):
+    def moveOrComeBack(self, largeur, hauteur, listP):
         # largeur est la limite de l'ecran
         for line in self.fleet:
             # pour chaque ligne
@@ -245,7 +252,7 @@ class Fleet:
                 a.update(self, largeur, hauteur)
         # move bullet
         for b in self.fired_bullet:
-            b.update(self, hauteur)
+            b.update(self, hauteur, listP)
 
 class Score:
     def __init__(self, player, score):
@@ -354,7 +361,7 @@ class SpaceInvader:
         self.canvas.after(10, self.animation)
 
     def animation(self):
-        self.fleet.moveOrComeBack(int(self.canvas.cget("width")), int(self.canvas.cget("height")))     # need to change the "8"
+        self.fleet.moveOrComeBack(int(self.canvas.cget("width")), int(self.canvas.cget("height")), self.listP)     # need to change the "8"
         for p in self.listP:
             p.update(self.fleet)
         # execute a nouveau self.animation dans 300ms
