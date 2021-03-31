@@ -196,8 +196,8 @@ class BulletAlien:
         self.canvas = shooter.canvas
 
     def install_in(self):
-        self.bullet_id = self.canvas.create_rectangle(self.shooter.x-self.radius, self.shooter.y+50-self.radius, self.shooter.x+self.radius, self.shooter.y+50+self.radius, fill=self.color) 
-        self.y = self.shooter.y-50-self.radius
+        self.bullet_id = self.canvas.create_rectangle(self.shooter.x-self.radius, self.shooter.y+25-self.radius, self.shooter.x+self.radius, self.shooter.y+25+self.radius, fill=self.color) 
+        self.y = self.shooter.y+50-self.radius
         self.x = self.shooter.x
 
     def update(self, fleet, hauteur):
