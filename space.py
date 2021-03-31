@@ -202,7 +202,7 @@ class BulletAlien:
 
     def update(self, fleet, hauteur):
         self.move_in()
-        if(self.y > hauteur):
+        if(self.y > hauteur+25):
             self.delete(fleet)
             return 0
         x1, y1, x2, y2 = self.canvas.bbox(self.bullet_id)
