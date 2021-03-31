@@ -57,10 +57,10 @@ class Defender:
         self.mX = 0
         self.mY = 0
 
-    def update(self, fleet):
+    def update(self, AllFleet):
         # function update
         for b in self.fired_bullet:
-            b.update(fleet)
+            b.update(AllFleet)
 
     def takeHit(self):
         self.life = self.life - 1
@@ -88,19 +88,20 @@ class Bullet:
         self.y = self.shooter.y-50-self.radius
         self.x = self.shooter.x
 
-    def update(self, fleet):
+    def update(self, allFleet):
         self.move_in()
         if(self.y < 0):
             self.delete()
             return 0
         x1, y1, x2, y2 = self.canvas.bbox(self.bullet_id)
         listA = self.canvas.find_overlapping(x1, y1, x2, y2)
-        for l in fleet.fleet:
-            for a in l:
-                if(a.sprite in listA):
-                    self.delete()
-                    a.delete(l)
-                    return 0
+        for f in allFleet:
+            for l in f.fleet:
+                for a in l:
+                    if(a.sprite in listA):
+                        self.delete()
+                        a.delete(l)
+                        return 0
     
     def move_in(self):
         self.canvas.move(self.bullet_id, 0, -(self.speed))
@@ -344,7 +345,7 @@ class SpaceInvader:
         self.square_width = 50
         self.canvas = tk.Canvas(self.root, width=self.canvas_width, height = self.canvas_height)
         self.canvas.pack()
-        self.fleet = None
+        self.allFleet = []
         
 
 
@@ -355,20 +356,22 @@ class SpaceInvader:
         p = Defender(1,self.canvas, self.canvas_width // 2, self.canvas_height-10)
         self.listP = [p]
         # create fleet
-        self.fleet = Fleet(self.canvas)
+        fleet = Fleet(self.canvas)
+        self.allFleet.append(fleet)
         canvas_width = int(self.canvas.cget("width"))
         canvas_height = int(self.canvas.cget("height"))
         x, y = canvas_width//10, canvas_height//10 
-        self.fleet.install_in(x, y)
+        self.allFleet[0].install_in(x, y)
     
     def start_animation(self):
         # execute self.animation dans 10ms
         self.canvas.after(10, self.animation)
 
     def animation(self):
-        self.fleet.moveOrComeBack(int(self.canvas.cget("width")), int(self.canvas.cget("height")), self.listP)     # need to change the "8"
+        for f in self.allFleet:
+            f.moveOrComeBack(int(self.canvas.cget("width")), int(self.canvas.cget("height")), self.listP)     # need to change the "8"
         for p in self.listP:
-            p.update(self.fleet)
+            p.update(self.allFleet)
         # execute a nouveau self.animation dans 300ms
         self.canvas.after(25, self.animation)
     
