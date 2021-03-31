@@ -250,13 +250,17 @@ class Fleet:
             y = y + 40
             
     def moveOrComeBack(self, largeur, hauteur, listP):
+        i = 0
         # largeur est la limite de l'ecran
         for line in self.fleet:
             # pour chaque ligne
             for a in line:
                 # update chaque alien
                 a.update(self, largeur, hauteur)
+                i = i + 1
         # move bullet
+        if(i <= 0):
+            print("Gagner!!!")
         for b in self.fired_bullet:
             b.update(self, hauteur, listP)
 
