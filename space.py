@@ -90,7 +90,7 @@ class Bullet:
         self.canvas = shooter.canvas
 
     def install_in(self):
-        self.bullet_id = self.canvas.create_rectangle(self.shooter.x-self.radius, self.shooter.y-50-self.radius, self.shooter.x+self.radius, self.shooter.y-50+self.radius, fill=self.color) 
+        self.bullet_id = self.canvas.create_oval(self.shooter.x-self.radius, self.shooter.y-50-self.radius, self.shooter.x+self.radius, self.shooter.y-50+self.radius, fill=self.color) 
         self.y = self.shooter.y-50-self.radius
         self.x = self.shooter.x
 
@@ -212,7 +212,7 @@ class BulletAlien:
         self.canvas = shooter.canvas
 
     def install_in(self):
-        self.bullet_id = self.canvas.create_rectangle(self.shooter.x-self.radius, self.shooter.y+25-self.radius, self.shooter.x+self.radius, self.shooter.y+25+self.radius, fill=self.color) 
+        self.bullet_id = self.canvas.create_oval(self.shooter.x-self.radius, self.shooter.y+25-self.radius, self.shooter.x+self.radius, self.shooter.y+25+self.radius, fill=self.color) 
         self.y = self.shooter.y+50-self.radius
         self.x = self.shooter.x
 
@@ -413,7 +413,8 @@ class SpaceInvader:
         if(self.pseudo == None):
             self.pseudo = 'player'+str(player.id)
         print(str(self.pseudo)+' : '+str(player.playerScore))
-
+        
+        # Saving score
         leScore = Score(self.pseudo, player.playerScore)
         self.lesScores.listScore.append(leScore)
         # TODO : temp fix to test writing score
