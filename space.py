@@ -93,7 +93,6 @@ class Bullet:
             self.color = "red"
             self.speed = 6
 
-        
         self.y =0
         self.x=0
         
@@ -245,7 +244,7 @@ class Fleet:
         self.fleet = []
         self.orientation = 0
         self.canvas = canvas
-        # set fleet reinforcement
+        # set fleet reinforcement = if True, the fleet already receive reinforcement
         self.reinforcement = False
         # bullet
         self.fired_bullet = []
@@ -279,7 +278,7 @@ class Fleet:
     def delete(self, parent):
         parent.allFleet.remove(self)
         for b in self.fired_bullet:
-            b.delete(self)
+            b.delete_Alien(self)
                 
 
 class Score:
@@ -401,6 +400,16 @@ class SpaceInvader:
                 self.allFleet.append(newFleet)
                 self.allFleet[len(self.allFleet)-1].install_in(self.canvas_width//10, self.canvas_height//10)
                 f.reinforcement = True
+            if(nbAlien == 0):
+                for player in self.listP:
+                    player.life = player.life +1
+                    print('+1 Vie')
+                for bullet in f.fired_bullet:
+                    bullet.delete_Alien(self)
+
+            
+
+
         for p in self.listP:
             p.update(self.allFleet)
 
