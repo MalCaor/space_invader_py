@@ -57,10 +57,10 @@ class Defender:
         self.mX = 0
         self.mY = 0
 
-    def update(self, AllFleet):
+    def update(self, allFleet):
         # function update
         for b in self.fired_bullet:
-            b.update(AllFleet)
+            b.update(allFleet)
 
     def takeHit(self):
         self.life = self.life - 1
@@ -383,8 +383,13 @@ class SpaceInvader:
             f.moveOrComeBack(self, int(self.canvas.cget("width")), int(self.canvas.cget("height")), self.listP)     # need to change the "8"
         for p in self.listP:
             p.update(self.allFleet)
-        # execute a nouveau self.animation dans 300ms
-        self.canvas.after(25, self.animation)
+
+        for p in self.listP:
+            if(not self.allFleet or p.life <= 0):
+                self.end()
+            else:
+                # execute a nouveau self.animation dans 300ms
+                self.canvas.after(25, self.animation)
     
     def start(self):
         self.install()
@@ -397,6 +402,9 @@ class SpaceInvader:
         # etc...
         self.start_animation()
         self.root.mainloop()
+    
+    def end(self):
+        print('Game Over')
 
 
 
