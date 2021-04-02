@@ -88,10 +88,12 @@ class Bullet:
 
         if(shooter.type == 'Defender'):
             self.color = "blue"
+            self.speed = 8
         elif(shooter.type == 'Alien'):
             self.color = "red"
+            self.speed = 6
 
-        self.speed = 8
+        
         self.y =0
         self.x=0
         
@@ -235,18 +237,6 @@ class Alien:
         self.canvas.delete(self.sprite)
         line.remove(self)
 
-'''
-class BulletAlien:
-    def __init__(self,shooter):
-        self.radius = 6
-        self.color = "red"
-        self.speed = 5
-        self.y =0
-        self.x=0
-        # shooter
-        self.shooter = shooter
-        self.canvas = shooter.canvas'''
-
     
 
 class Fleet:
@@ -255,6 +245,8 @@ class Fleet:
         self.fleet = []
         self.orientation = 0
         self.canvas = canvas
+        # set fleet reinforcement
+        self.reinforcement = False
         # bullet
         self.fired_bullet = []
     
@@ -386,9 +378,9 @@ class SpaceInvader:
         # create fleet
         fleet = Fleet(self.canvas)
         self.allFleet.append(fleet)
-        canvas_width = int(self.canvas.cget("width"))
-        canvas_height = int(self.canvas.cget("height"))
-        x, y = canvas_width//10, canvas_height//10 
+        self.canvas_width = int(self.canvas.cget("width"))
+        self.canvas_height = int(self.canvas.cget("height"))
+        x, y = self.canvas_width//10, self.canvas_height//10 
         self.allFleet[0].install_in(x, y)
     
     def start_animation(self):
@@ -397,7 +389,18 @@ class SpaceInvader:
 
     def animation(self):
         for f in self.allFleet:
-            f.moveOrComeBack(self, int(self.canvas.cget("width")), int(self.canvas.cget("height")), self.listP)     # need to change the "8"
+            f.moveOrComeBack(self, int(self.canvas.cget("width")), int(self.canvas.cget("height")), self.listP)
+
+            # count number alien
+            nbAlien=0
+            for line in f.fleet:
+                for alien in line:
+                    nbAlien = nbAlien+1
+            if(nbAlien<=6 and f.reinforcement==False):
+                newFleet = Fleet(self.canvas)
+                self.allFleet.append(newFleet)
+                self.allFleet[len(self.allFleet)-1].install_in(self.canvas_width//10, self.canvas_height//10)
+                f.reinforcement = True
         for p in self.listP:
             p.update(self.allFleet)
 
