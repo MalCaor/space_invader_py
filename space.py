@@ -27,6 +27,8 @@ class Defender:
         # player bullets
         self.max_fired_bullet = 8
         self.fired_bullet = []
+        # player score
+        self.playerScore = 0
         # console message when init finish
         print("player initialized")
         
@@ -64,11 +66,15 @@ class Defender:
 
     def takeHit(self):
         self.life = self.life - 1
-        if(self.life <= 0):
-            self.death()
+        self.playerScore = self.playerScore - 5
+        if(self.playerScore < 0):
+            self.playerScore = 0
 
-    def death(self):
-        print("perdu")
+        #if(self.life <= 0):
+            #self.death()
+
+    #def death(self):
+        #print("perdu")
 
 
 
@@ -101,6 +107,7 @@ class Bullet:
                     if(a.sprite in listA):
                         self.delete()
                         a.delete(l)
+                        self.shooter.playerScore = self.shooter.playerScore + 10
                         return 0
     
     def move_in(self):
@@ -346,10 +353,8 @@ class SpaceInvader:
         # pseudo 
         self.pseudo = simpledialog.askstring(title="Pseudo",prompt="What is your Pseudo?:")
         self.lesScores = ListScore.fromFile("score.json")
-        leScore = Score(self.pseudo, 0)
-        self.lesScores.listScore.append(leScore)
-        # TODO : temp fix to test writing score
-        self.lesScores.toFile("score.json")
+        
+        
         # config canvas
         self.canvas_width = 600
         self.canvas_height = 400
@@ -386,7 +391,7 @@ class SpaceInvader:
 
         for p in self.listP:
             if(not self.allFleet or p.life <= 0):
-                self.end()
+                self.end(p)
             else:
                 # execute a nouveau self.animation dans 300ms
                 self.canvas.after(25, self.animation)
@@ -403,8 +408,17 @@ class SpaceInvader:
         self.start_animation()
         self.root.mainloop()
     
-    def end(self):
+    def end(self,player):
         print('Game Over')
+        if(self.pseudo == None):
+            self.pseudo = 'player'+str(player.id)
+        print(str(self.pseudo)+' : '+str(player.playerScore))
+
+        leScore = Score(self.pseudo, player.playerScore)
+        self.lesScores.listScore.append(leScore)
+        # TODO : temp fix to test writing score
+        self.lesScores.toFile("score.json")
+        
 
 
 
