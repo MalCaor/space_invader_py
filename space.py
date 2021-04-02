@@ -11,6 +11,7 @@ class Defender:
     def __init__(self, id, canvas, x, y):
         # player id
         self.id = id
+        self.type = 'Defender'
         # player pos
         self.x = x
         self.y = y
@@ -46,7 +47,7 @@ class Defender:
         # function to fire/shoot
         if(len(self.fired_bullet) < self.max_fired_bullet):
             bullet = Bullet(self)
-            bullet.install_in()
+            bullet.install_in_Defender()
             self.fired_bullet.append(bullet)
 
     def movement(self):
@@ -62,26 +63,34 @@ class Defender:
     def update(self, allFleet):
         # function update
         for b in self.fired_bullet:
-            b.update(allFleet)
+            b.update_Defender(allFleet)
 
     def takeHit(self):
         self.life = self.life - 1
         self.playerScore = self.playerScore - 5
+
         if(self.playerScore < 0):
+            # pas de score négatif
             self.playerScore = 0
 
-        #if(self.life <= 0):
-            #self.death()
+        if(self.life <= 0):
+            self.death()
 
-    #def death(self):
-        #print("perdu")
+    def death(self):
+        # Explosion animation !!!!
+        print("perdu")
 
 
 
 class Bullet:
     def __init__(self,shooter):
         self.radius = 6
-        self.color = "blue"
+
+        if(shooter.type == 'Defender'):
+            self.color = "blue"
+        elif(shooter.type == 'Alien'):
+            self.color = "red"
+
         self.speed = 8
         self.y =0
         self.x=0
@@ -89,15 +98,15 @@ class Bullet:
         self.shooter = shooter
         self.canvas = shooter.canvas
 
-    def install_in(self):
+    def install_in_Defender(self):
         self.bullet_id = self.canvas.create_oval(self.shooter.x-self.radius, self.shooter.y-50-self.radius, self.shooter.x+self.radius, self.shooter.y-50+self.radius, fill=self.color) 
         self.y = self.shooter.y-50-self.radius
         self.x = self.shooter.x
 
-    def update(self, allFleet):
-        self.move_in()
+    def update_Defender(self, allFleet):
+        self.move_in_Defender()
         if(self.y < 0):
-            self.delete()
+            self.delete_Defender()
             return 0
         x1, y1, x2, y2 = self.canvas.bbox(self.bullet_id)
         listA = self.canvas.find_overlapping(x1, y1, x2, y2)
@@ -105,25 +114,51 @@ class Bullet:
             for l in f.fleet:
                 for a in l:
                     if(a.sprite in listA):
-                        self.delete()
+                        self.delete_Defender()
                         a.delete(l)
                         self.shooter.playerScore = self.shooter.playerScore + 10
                         return 0
     
-    def move_in(self):
+    def move_in_Defender(self):
         self.canvas.move(self.bullet_id, 0, -(self.speed))
         self.y = self.y-self.speed
 
-    def delete(self):
+    def delete_Defender(self):
         self.shooter.fired_bullet.remove(self)
         self.canvas.delete(self.bullet_id)
     
+    def install_in_Alien(self):
+        self.bullet_id = self.canvas.create_oval(self.shooter.x-self.radius, self.shooter.y+25-self.radius, self.shooter.x+self.radius, self.shooter.y+25+self.radius, fill=self.color) 
+        self.y = self.shooter.y+50-self.radius
+        self.x = self.shooter.x
 
+    def update_Alien(self, fleet, hauteur, listP):
+        self.move_in_Alien()
+        if(self.y > hauteur+25):
+            self.delete_Alien(fleet)
+            return 0
+        x1, y1, x2, y2 = self.canvas.bbox(self.bullet_id)
+        listOverlap = self.canvas.find_overlapping(x1, y1, x2, y2)
+        for p in listP:
+            if(p.sprite in listOverlap):
+                self.delete_Alien(fleet)
+                p.takeHit()
+    
+    def move_in_Alien(self):
+        self.canvas.move(self.bullet_id, 0, +(self.speed))
+        self.y = self.y+self.speed
+
+    def delete_Alien(self, fleet):
+        fleet.fired_bullet.remove(self)
+        self.shooter.fired_bullet = self.shooter.fired_bullet-1
+        self.canvas.delete(self.bullet_id)
 
 
 
 class Alien:
     def __init__(self, x, y, canvas):
+        # type
+        self.type = 'Alien'
         # position de l'alien
         self.x = x
         self.y = y
@@ -191,8 +226,8 @@ class Alien:
     def shoot(self, fleet):
         # function to fire/shoot
         if(self.fired_bullet < self.max_fired_bullet):
-            bullet = BulletAlien(self)
-            bullet.install_in()
+            bullet = Bullet(self)
+            bullet.install_in_Alien()
             self.fired_bullet = self.fired_bullet+1
             fleet.fired_bullet.append(bullet)
 
@@ -200,6 +235,7 @@ class Alien:
         self.canvas.delete(self.sprite)
         line.remove(self)
 
+'''
 class BulletAlien:
     def __init__(self,shooter):
         self.radius = 6
@@ -209,33 +245,9 @@ class BulletAlien:
         self.x=0
         # shooter
         self.shooter = shooter
-        self.canvas = shooter.canvas
+        self.canvas = shooter.canvas'''
 
-    def install_in(self):
-        self.bullet_id = self.canvas.create_oval(self.shooter.x-self.radius, self.shooter.y+25-self.radius, self.shooter.x+self.radius, self.shooter.y+25+self.radius, fill=self.color) 
-        self.y = self.shooter.y+50-self.radius
-        self.x = self.shooter.x
-
-    def update(self, fleet, hauteur, listP):
-        self.move_in()
-        if(self.y > hauteur+25):
-            self.delete(fleet)
-            return 0
-        x1, y1, x2, y2 = self.canvas.bbox(self.bullet_id)
-        listOverlap = self.canvas.find_overlapping(x1, y1, x2, y2)
-        for p in listP:
-            if(p.sprite in listOverlap):
-                self.delete(fleet)
-                p.takeHit()
     
-    def move_in(self):
-        self.canvas.move(self.bullet_id, 0, +(self.speed))
-        self.y = self.y+self.speed
-
-    def delete(self, fleet):
-        fleet.fired_bullet.remove(self)
-        self.shooter.fired_bullet = self.shooter.fired_bullet-1
-        self.canvas.delete(self.bullet_id)
 
 class Fleet:
     # groupe d alien
@@ -270,7 +282,7 @@ class Fleet:
             self.delete(spaceInv)
 
         for b in self.fired_bullet:
-            b.update(self, hauteur, listP)
+            b.update_Alien(self, hauteur, listP)
 
     def delete(self, parent):
         parent.allFleet.remove(self)
