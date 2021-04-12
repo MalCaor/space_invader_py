@@ -381,6 +381,7 @@ class SpaceInvader:
         self.canvas_height = int(self.canvas.cget("height"))
         x, y = self.canvas_width//10, self.canvas_height//10 
         self.allFleet[0].install_in(x, y)
+        self.scoreText = None
     
     def start_animation(self):
         # execute self.animation dans 10ms
@@ -412,11 +413,14 @@ class SpaceInvader:
 
         for p in self.listP:
             p.update(self.allFleet)
-            '''
-            score = tk.Text(self.root)
-            score.insert(tk.END, 'tset')
-            score.pack()
-            score.tag_config("here", background="white", foreground="blue")'''
+            
+            if (self.pseudo == None):
+                self.pseudo = "player1"
+            if(self.scoreText != None):
+                self.canvas.delete(self.scoreText)
+            self.scoreText = self.canvas.create_text(100,10,fill="white",text= self.pseudo+" : "+str(p.playerScore))
+                
+    
 
         for p in self.listP:
             if(not self.allFleet or p.life <= 0):
