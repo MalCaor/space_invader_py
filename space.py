@@ -67,6 +67,7 @@ class Defender:
 
     def takeHit(self):
         self.life = self.life - 1
+        #retire des points si touché
         self.playerScore = self.playerScore - 5
 
         if(self.playerScore < 0):
@@ -331,7 +332,7 @@ class ListScore:
         tmp = json.load(f)
         liste = []
         for d in tmp:
-            #créer un scre
+            #créer un score
             l=Score(d["player"],d["score"])
             #l'ajouter dans la liste
             liste.append(l)
@@ -383,9 +384,13 @@ class SpaceInvader:
         self.allFleet[0].install_in(x, y)
         self.scoreText = None
     
+
+
     def start_animation(self):
         # execute self.animation dans 10ms
         self.canvas.after(10, self.animation)
+
+
 
     def animation(self):
         
@@ -398,7 +403,7 @@ class SpaceInvader:
                 for alien in line:
                     nbAlien = nbAlien+1
             # envoie du renfort
-            if(nbAlien<=6 and uneFleet.reinforcement==False):
+            if(nbAlien<=3 and uneFleet.reinforcement==False):
                 newFleet = Fleet(self.canvas)
                 self.allFleet.append(newFleet)
                 self.allFleet[len(self.allFleet)-1].install_in(self.canvas_width//10, self.canvas_height//10)
@@ -406,7 +411,7 @@ class SpaceInvader:
             # quand une flotte est detruite
             if(nbAlien == 0):
                 for player in self.listP:
-                    player.life = player.life +1
+                    player.life = player.life + 1
                     print('+1 Vie')
                 for bullet in uneFleet.fired_bullet:
                     bullet.delete_Alien(uneFleet)
@@ -414,10 +419,19 @@ class SpaceInvader:
         #Affichage du Score et des Vies
         for p in self.listP:
             p.update(self.allFleet)
-            if (self.pseudo == None):
+            highestScore = 0
+            pseudoHighestScore = ''
+            for score in self.lesScores.listScore:
+                if(highestScore < score.score):
+                    highestScore = score.score
+                    pseudoHighestScore = score.player
+            if (self.pseudo == None or self.pseudo == ""):
                 self.pseudo = "player"
             if(self.scoreText != None):
                 self.canvas.delete(self.scoreText)
+            else:
+                self.canvas.create_text(self.canvas_width/2,10,fill="white",font="Arial 10",text= "Highest Score")
+                self.canvas.create_text(self.canvas_width/2,25,fill="white",font="Arial 10",text= pseudoHighestScore+" : "+str(highestScore))
             self.scoreText = self.canvas.create_text(100,10,fill="white",text= self.pseudo+" : "+str(p.playerScore)+"   Vies = "+str(p.life))
                 
         #Continue ou Fin du jeu
@@ -428,6 +442,8 @@ class SpaceInvader:
                 # execute a nouveau self.animation dans 300ms
                 self.canvas.after(25, self.animation)
     
+
+
     def start(self):
         self.install()
         # fuction on loop
@@ -440,6 +456,8 @@ class SpaceInvader:
         self.start_animation()
         self.root.mainloop()
     
+
+
     def end(self,player):
         print('Game Over')
         if(self.pseudo == None):
