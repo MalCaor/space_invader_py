@@ -388,27 +388,27 @@ class SpaceInvader:
 
     def animation(self):
         
-        for f in self.allFleet:
-            f.moveOrComeBack(self, int(self.canvas.cget("width")), int(self.canvas.cget("height")), self.listP)
+        for uneFleet in self.allFleet:
+            uneFleet.moveOrComeBack(self, int(self.canvas.cget("width")), int(self.canvas.cget("height")), self.listP)
 
             # count number alien
             nbAlien=0
-            for line in f.fleet:
+            for line in uneFleet.fleet:
                 for alien in line:
                     nbAlien = nbAlien+1
             # envoie du renfort
-            if(nbAlien<=6 and f.reinforcement==False):
+            if(nbAlien<=6 and uneFleet.reinforcement==False):
                 newFleet = Fleet(self.canvas)
                 self.allFleet.append(newFleet)
                 self.allFleet[len(self.allFleet)-1].install_in(self.canvas_width//10, self.canvas_height//10)
-                f.reinforcement = True
+                uneFleet.reinforcement = True
             # quand une flotte est detruite
             if(nbAlien == 0):
                 for player in self.listP:
                     player.life = player.life +1
                     print('+1 Vie')
-                for bullet in f.fired_bullet:
-                    bullet.delete_Alien(self)
+                for bullet in uneFleet.fired_bullet:
+                    bullet.delete_Alien(uneFleet)
 
         for p in self.listP:
             p.update(self.allFleet)
