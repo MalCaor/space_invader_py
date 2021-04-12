@@ -411,17 +411,16 @@ class SpaceInvader:
                 for bullet in uneFleet.fired_bullet:
                     bullet.delete_Alien(uneFleet)
 
+        #Affichage du Score et des Vies
         for p in self.listP:
             p.update(self.allFleet)
-            
             if (self.pseudo == None):
-                self.pseudo = "player1"
+                self.pseudo = "player"
             if(self.scoreText != None):
                 self.canvas.delete(self.scoreText)
-            self.scoreText = self.canvas.create_text(100,10,fill="white",text= self.pseudo+" : "+str(p.playerScore))
+            self.scoreText = self.canvas.create_text(100,10,fill="white",text= self.pseudo+" : "+str(p.playerScore)+"   Vies = "+str(p.life))
                 
-    
-
+        #Continue ou Fin du jeu
         for p in self.listP:
             if(not self.allFleet or p.life <= 0):
                 self.end(p)
