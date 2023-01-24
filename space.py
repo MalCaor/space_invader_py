@@ -18,7 +18,8 @@ class SpaceInvader:
         # pseudo 
         self.pseudo = simpledialog.askstring(title="Pseudo",prompt="What is your Pseudo?:")
         self.lesScores = ListScore.fromFile("score.json")
-        
+        self.allFleet = []
+        self.destroyedFleet = 0
         
         # config canvas
         self.canvas_width = 600
@@ -26,8 +27,7 @@ class SpaceInvader:
         self.square_width = 50
         self.canvas = tk.Canvas(self.root, width=self.canvas_width, height = self.canvas_height)
         self.canvas.pack()
-        self.allFleet = []
-        self.destroyedFleet = 0
+        
         
 
 
@@ -104,12 +104,15 @@ class SpaceInvader:
             if (self.pseudo == None or self.pseudo == ""):
                 self.pseudo = "player"
             
+            # Supprime les canvas scoreText et destroyedFleetText...
             if(self.scoreText != None or self.destroyedFleetText != None):
                 self.canvas.delete(self.scoreText)
                 self.canvas.delete(self.destroyedFleetText)
             else:
                 self.canvas.create_text(self.canvas_width/2,10,fill="white",font="Arial 10",text= "Highest Score")
                 self.canvas.create_text(self.canvas_width/2,25,fill="white",font="Arial 10",text= pseudoHighestScore+" : "+str(highestScore))
+            
+            # ... pour ensuite les regénéré avec les nouvelles données
             self.scoreText = self.canvas.create_text(100,10,fill="white",text= self.pseudo+" : "+str(p.playerScore)+"   Vies = "+str(p.life))
             self.destroyedFleetText = self.canvas.create_text(self.canvas_width*(3/4),10,fill="white",font="Arial 10",text= "Flottes : "+ str(self.destroyedFleet) )
       
