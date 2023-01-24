@@ -44,6 +44,12 @@ class SpaceInvader:
         x, y = self.canvas_width//10, self.canvas_height//10 
         self.allFleet[0].install_in(x, y)
         self.scoreText = None
+        # fuction on loop
+        self.listP[0].movement()
+        # key binding
+        self.root.bind("<KeyPress-Left>", lambda e: self.listP[0].left(e))
+        self.root.bind("<KeyPress-Right>", lambda e: self.listP[0].right(e))
+        self.root.bind("<KeyPress-space>", lambda e: self.listP[0].shoot(e))
     
 
 
@@ -107,25 +113,24 @@ class SpaceInvader:
 
     def start(self):
         self.install()
-        # fuction on loop
-        self.listP[0].movement()
-        # key binding
-        self.root.bind("<KeyPress-Left>", lambda e: self.listP[0].left(e))
-        self.root.bind("<KeyPress-Right>", lambda e: self.listP[0].right(e))
-        self.root.bind("<KeyPress-space>", lambda e: self.listP[0].shoot(e))
         # etc...
         self.start_animation()
         self.root.mainloop()
-    
 
+    def reset(self):
+        # unbind key
+        self.root.unbind("<KeyPress-r>")
+        #delet les fleet
+        for f in self.allFleet :
+            f.delete(self)
+        self.install()
+        self.animation()
 
     def end(self,player):
         # display Game Over
         print('Game Over')
         self.canvas.create_text(self.canvas_width/2,self.canvas_height/2,fill="white",font="Arial 20",text= "Game Over")
-        #delet les fleet
-        for f in self.allFleet :
-            f.delete(self)
+        self.canvas.create_text(self.canvas_width/2,self.canvas_height/2+25,fill="white",font="Arial 12",text= "Score : " + str(self.listP[0].playerScore))
         # print score
         if(self.pseudo == None):
             self.pseudo = 'player'+str(player.id)
@@ -135,10 +140,10 @@ class SpaceInvader:
         self.lesScores.listScore.append(leScore)
         # TODO : temp fix to test writing score
         self.lesScores.toFile("score.json")
-        
-
-
-
+        # retry
+        print('bind')
+        self.root.bind("<KeyPress-r>", lambda e: self.reset())
+        self.canvas.create_text(self.canvas_width/2,self.canvas_height/2+50,fill="white",font="Arial 10",text= "Press R to retry")
 
 ex = SpaceInvader()
 ex.start()
