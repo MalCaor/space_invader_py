@@ -120,11 +120,16 @@ class SpaceInvader:
 
 
     def end(self,player):
+        # display Game Over
         print('Game Over')
+        self.canvas.create_text(self.canvas_width/2,self.canvas_height/2,fill="white",font="Arial 20",text= "Game Over")
+        #delet les fleet
+        for f in self.allFleet :
+            f.delete(self)
+        # print score
         if(self.pseudo == None):
             self.pseudo = 'player'+str(player.id)
         print(str(self.pseudo)+' : '+str(player.playerScore))
-        
         # Saving score
         leScore = Score(self.pseudo, player.playerScore)
         self.lesScores.listScore.append(leScore)
