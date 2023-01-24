@@ -1,7 +1,10 @@
 # Space Invader in Python
----
-1. dependency
-- PIL
-- tkinter
-- json
-- os
+
+## Nous
+
+Malcaor : Xavier LE MEN
+Le Narrateur : Theo PASTÉ
+
+## Git Capture
+
+![capture](img/Merge.PNG)
