@@ -18,7 +18,7 @@ class Defender:
         self.mX = 0
         self.mY = 0
         # player lives
-        self.life = 30
+        self.life = 3
         # player sprite
         self.img = ImageTk.PhotoImage(Image.open("img/main_char.png"))
         self.imgv2 = self.img._PhotoImage__photo.zoom(2)
