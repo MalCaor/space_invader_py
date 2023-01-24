@@ -27,6 +27,7 @@ class SpaceInvader:
         self.canvas = tk.Canvas(self.root, width=self.canvas_width, height = self.canvas_height)
         self.canvas.pack()
         self.allFleet = []
+        self.destroyedFleet = 0
         
 
 
@@ -43,7 +44,11 @@ class SpaceInvader:
         self.canvas_height = int(self.canvas.cget("height"))
         x, y = self.canvas_width//10, self.canvas_height//10 
         self.allFleet[0].install_in(x, y)
+
+        # Texte du score et des vies du joueur
         self.scoreText = None
+        # Texte des flottes détruites par de defender
+        self.destroyedFleetText = None
     
 
 
@@ -56,6 +61,13 @@ class SpaceInvader:
     def animation(self):
         
         for uneFleet in self.allFleet:
+            if(self.destroyedFleet%10 == 0):
+                uneFleet.maxLineRandom+=1
+                uneFleet.minAlienRandom+=1
+            if(self.destroyedFleet%20 == 0):
+                uneFleet.minLineRandom+=1
+                uneFleet.maxAlienRandom+=1
+
             uneFleet.moveOrComeBack(self, int(self.canvas.cget("width")), int(self.canvas.cget("height")), self.listP)
 
             # count number alien
@@ -76,8 +88,9 @@ class SpaceInvader:
                     print('+1 Vie')
                 for bullet in uneFleet.fired_bullet:
                     bullet.delete_Alien(uneFleet)
+                self.destroyedFleet+=1
 
-        #Affichage du Score et des Vies
+        #Affichage du Score, des Vies et du nombre de Flottes apparus
         for p in self.listP:
             p.update(self.allFleet)
             highestScore = 0
@@ -86,15 +99,20 @@ class SpaceInvader:
                 if(highestScore < score.score):
                     highestScore = score.score
                     pseudoHighestScore = score.player
+            
+            # gestion de l'absence de pseudo pour l'affichage
             if (self.pseudo == None or self.pseudo == ""):
                 self.pseudo = "player"
-            if(self.scoreText != None):
+            
+            if(self.scoreText != None or self.destroyedFleetText != None):
                 self.canvas.delete(self.scoreText)
+                self.canvas.delete(self.destroyedFleetText)
             else:
                 self.canvas.create_text(self.canvas_width/2,10,fill="white",font="Arial 10",text= "Highest Score")
                 self.canvas.create_text(self.canvas_width/2,25,fill="white",font="Arial 10",text= pseudoHighestScore+" : "+str(highestScore))
             self.scoreText = self.canvas.create_text(100,10,fill="white",text= self.pseudo+" : "+str(p.playerScore)+"   Vies = "+str(p.life))
-                
+            self.destroyedFleetText = self.canvas.create_text(self.canvas_width*(3/4),10,fill="white",font="Arial 10",text= "Flottes : "+ str(self.destroyedFleet) )
+      
         #Continue ou Fin du jeu
         for p in self.listP:
             if(not self.allFleet or p.life <= 0):
@@ -131,9 +149,6 @@ class SpaceInvader:
         # TODO : temp fix to test writing score
         self.lesScores.toFile("score.json")
         
-
-
-
 
 ex = SpaceInvader()
 ex.start()
